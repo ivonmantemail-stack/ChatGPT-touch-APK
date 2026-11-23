@@ -1,4 +1,3 @@
-
 package com.example.chatgpttouch
 
 import android.app.Activity
@@ -108,3 +107,4 @@ class MainActivity : Activity() {
         super.onDestroy()
     }
 }
+
