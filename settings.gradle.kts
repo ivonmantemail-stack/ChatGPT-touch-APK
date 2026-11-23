@@ -1,4 +1,3 @@
-
 pluginManagement {
     repositories {
         google()
@@ -17,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ChatGPTTouch"
 include(":app")
+
