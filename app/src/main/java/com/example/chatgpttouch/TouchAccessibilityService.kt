@@ -1,4 +1,3 @@
-
 package com.example.chatgpttouch
 
 import android.accessibilityservice.AccessibilityService
@@ -123,3 +122,4 @@ class TouchAccessibilityService : AccessibilityService() {
         return result.toString().take(8000)
     }
 }
+
