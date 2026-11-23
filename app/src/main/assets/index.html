@@ -1,0 +1,511 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChatGPT Touch</title>
+
+<style>
+:root {
+    --bg: #090811;
+    --panel: #151323;
+    --purple: #9b5cff;
+    --purple2: #6c35c9;
+    --text: #f4efff;
+    --muted: #a69bbd;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+}
+
+header {
+    padding: 22px;
+    background: #100d1d;
+    border-bottom: 1px solid #302044;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: var(--purple);
+}
+
+.status {
+    color: #b7a4d5;
+    font-size: 11px;
+}
+
+nav {
+    display: flex;
+    gap: 6px;
+    padding: 10px;
+    background: #100d1d;
+    overflow-x: auto;
+}
+
+nav button {
+    flex: 1;
+    min-width: 65px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    padding: 12px 7px;
+    border-radius: 10px;
+}
+
+nav button.active {
+    background: #38205c;
+    color: white;
+}
+
+main {
+    padding: 18px;
+    padding-bottom: 35px;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+h1 {
+    font-size: 27px;
+}
+
+h2 {
+    font-size: 18px;
+}
+
+p {
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.card {
+    background: var(--panel);
+    border: 1px solid #302044;
+    border-radius: 16px;
+    padding: 17px;
+    margin: 13px 0;
+}
+
+button, input, textarea {
+    font: inherit;
+}
+
+.action {
+    background: var(--purple2);
+    color: white;
+    border: 0;
+    border-radius: 11px;
+    padding: 13px 16px;
+    margin: 4px;
+}
+
+.secondary {
+    background: #292238;
+    color: white;
+    border: 1px solid #49365e;
+    border-radius: 11px;
+    padding: 12px;
+    margin: 4px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 13px;
+    margin: 6px 0;
+    border: 1px solid #49365e;
+    border-radius: 10px;
+    background: #0d0b17;
+    color: white;
+}
+
+textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.chatlog {
+    height: 300px;
+    overflow-y: auto;
+    background: #0d0b17;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.message {
+    padding: 10px;
+    border-radius: 10px;
+    margin: 8px 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.user {
+    background: #38205c;
+}
+
+.assistant {
+    background: #211b30;
+}
+
+.appgrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.appitem {
+    text-align: center;
+    background: #201a30;
+    border: 1px solid #3b2b53;
+    border-radius: 13px;
+    padding: 18px 5px;
+    color: white;
+}
+
+.small {
+    font-size: 12px;
+    color: var(--muted);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">CHATGPT <span>TOUCH</span></div>
+    <div class="status" id="status">DEMO MODE</div>
+</header>
+
+<nav>
+    <button class="active" onclick="showPage('home',this)">Home</button>
+    <button onclick="showPage('chat',this)">Chat</button>
+    <button onclick="showPage('apps',this)">Apps</button>
+    <button onclick="showPage('touch',this)">Touch</button>
+    <button onclick="showPage('settings',this)">Settings</button>
+</nav>
+
+<main>
+
+<section id="home" class="page active">
+    <h1>Your AI. Your controls.</h1>
+    <p>Control your Android experience with an assistant you direct.</p>
+
+    <div class="card">
+        <h2>Assistant status</h2>
+        <p id="serviceStatus">Checking accessibility service...</p>
+        <button class="action" onclick="enableService()">Enable controls</button>
+    </div>
+
+    <div class="card">
+        <h2>Quick actions</h2>
+        <button class="secondary" onclick="goBack()">Back</button>
+        <button class="secondary" onclick="goHome()">Home</button>
+        <button class="secondary" onclick="readScreen()">Read screen</button>
+    </div>
+
+    <div class="card">
+        <h2>Choose your mode</h2>
+        <button class="action" onclick="setMode('text')">Text mode</button>
+        <button class="action" onclick="setMode('voice')">Voice mode</button>
+        <p id="modeStatus">Current mode: Text</p>
+    </div>
+</section>
+
+<section id="chat" class="page">
+    <h1>AI Assistant</h1>
+    <p>Talk to your assistant using text or your microphone.</p>
+
+    <div class="card">
+        <div class="chatlog" id="chatlog">
+            <div class="message assistant">
+                ChatGPT Touch is ready. What would you like me to do?
+            </div>
+        </div>
+
+        <textarea id="message" placeholder="Write a message..."></textarea>
+
+        <button class="action" onclick="sendMessage()">Send</button>
+        <button class="secondary" onclick="startVoice()">🎤 Voice</button>
+    </div>
+    <p class="small">
+        This initial build has a local demo assistant.
+        A secure AI API connection still needs to be configured.
+    </p>
+</section>
+
+<section id="apps" class="page">
+    <h1>Apps</h1>
+    <p>Select an app to open on your device.</p>
+
+    <div class="appgrid">
+        <button class="appitem" onclick="openApp('com.whatsapp')">WhatsApp</button>
+        <button class="appitem" onclick="openApp('com.discord')">Discord</button>
+        <button class="appitem" onclick="openApp('com.instagram.android')">Instagram</button>
+        <button class="appitem" onclick="openApp('com.android.chrome')">Chrome</button>
+        <button class="appitem" onclick="openApp('com.google.android.youtube')">YouTube</button>
+        <button class="appitem" onclick="openApp('com.android.settings')">Settings</button>
+    </div>
+
+    <p class="small">
+        An app must be installed on your device to open.
+    </p>
+</section>
+
+<section id="touch" class="page">
+    <h1>Touch controls</h1>
+    <p>These controls require the Android accessibility service.</p>
+
+    <div class="card">
+        <h2>Navigation</h2>
+        <button class="action" onclick="goBack()">← Back</button>
+        <button class="action" onclick="goHome()">⌂ Home</button>
+    </div>
+
+    <div class="card">
+        <h2>Screen reader</h2>
+        <button class="action" onclick="readScreen()">Read visible screen</button>
+        <textarea id="screenText" readonly placeholder="Accessible screen text appears here."></textarea>
+    </div>
+
+    <div class="card">
+        <h2>Tap coordinates</h2>
+        <p class="small">Coordinates are physical screen pixels.</p>
+        <input id="tapX" type="number" placeholder="X coordinate">
+        <input id="tapY" type="number" placeholder="Y coordinate">
+        <button class="action" onclick="performTap()">Perform tap</button>
+    </div>
+
+    <div class="card">
+        <h2>Swipe</h2>
+        <input id="startX" type="number" placeholder="Start X">
+        <input id="startY" type="number" placeholder="Start Y">
+        <input id="endX" type="number" placeholder="End X">
+        <input id="endY" type="number" placeholder="End Y">
+        <button class="action" onclick="performSwipe()">Perform swipe</button>
+    </div>
+</section>
+
+<section id="settings" class="page">
+    <h1>Settings</h1>
+
+    <div class="card">
+        <h2>Accessibility permission</h2>
+        <p>Enable ChatGPT Touch in Android Accessibility settings to allow requested controls.</p>
+        <button class="action" onclick="enableService()">Open Android settings</button>
+    </div>
+
+    <div class="card">
+        <h2>Voice settings</h2>
+        <button class="secondary" onclick="setMode('voice')">Voice mode</button>
+        <button class="secondary" onclick="setMode('text')">Text mode</button>
+        <button class="secondary" onclick="speak('Voice test successful.')">Test speech</button>
+    </div>
+
+    <div class="card">
+        <h2>About</h2>
+        <p>CHATGPT TOUCH</p>
+        <p>Version 0.1.0</p>
+        <p class="small">Android assistant prototype.</p>
+    </div>
+</section>
+
+</main>
+
+<script>
+function showPage(id, button) {
+    document.querySelectorAll('.page').forEach(p => {
+        p.classList.remove('active');
+    });
+
+    document.querySelectorAll('nav button').forEach(b => {
+        b.classList.remove('active');
+    });
+
+    document.getElementById(id).classList.add('active');
+    button.classList.add('active');
+    updateStatus();
+}
+
+function updateStatus() {
+    const available =
+        window.AndroidTouch &&
+        AndroidTouch.isAvailable();
+
+    document.getElementById('status').textContent =
+        available ? 'CONTROLS ENABLED' : 'CONTROLS DISABLED';
+
+    document.getElementById('serviceStatus').textContent =
+        available
+        ? 'Accessibility service is connected.'
+        : 'Accessibility service is not enabled.';
+}
+
+function enableService() {
+    if (window.AndroidTouch) {
+        AndroidTouch.openAccessibilitySettings();
+    }
+}
+
+function requireService() {
+    if (!window.AndroidTouch || !AndroidTouch.isAvailable()) {
+        alert('Enable ChatGPT Touch in Android Accessibility settings first.');
+        return false;
+    }
+    return true;
+}
+
+function goBack() {
+    if (requireService()) AndroidTouch.back();
+}
+
+function goHome() {
+    if (requireService()) AndroidTouch.home();
+}
+
+function readScreen() {
+    if (!requireService()) return;
+
+    document.getElementById('screenText').value =
+        AndroidTouch.readScreen();
+}
+
+function performTap() {
+    if (!requireService()) return;
+
+    const x = Number(document.getElementById('tapX').value);
+    const y = Number(document.getElementById('tapY').value);
+
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+        alert('Enter valid X and Y coordinates.');
+        return;
+    }
+
+    AndroidTouch.tap(x, y);
+}
+
+function performSwipe() {
+    if (!requireService()) return;
+
+    const sx = Number(document.getElementById('startX').value);
+    const sy = Number(document.getElementById('startY').value);
+    const ex = Number(document.getElementById('endX').value);
+    const ey = Number(document.getElementById('endY').value);
+
+    if (![sx, sy, ex, ey].every(Number.isFinite)) {
+        alert('Enter all four coordinates.');
+        return;
+    }
+
+    AndroidTouch.swipe(sx, sy, ex, ey);
+}
+
+function addMessage(text, type) {
+    const log = document.getElementById('chatlog');
+    const message = document.createElement('div');
+
+    message.className = 'message ' + type;
+    message.textContent = text;
+
+    log.appendChild(message);
+    log.scrollTop = log.scrollHeight;
+}
+
+function sendMessage() {
+    const input = document.getElementById('message');
+    const text = input.value.trim();
+
+    if (!text) return;
+
+    addMessage(text, 'user');
+    input.value = '';
+
+    const response =
+        'I received your message. The local demo assistant is working. ' +
+        'A secure AI connection is not configured yet.';
+
+    addMessage(response, 'assistant');
+}
+
+let currentMode = 'text';
+
+function setMode(mode) {
+    currentMode = mode;
+
+    document.getElementById('modeStatus').textContent =
+        'Current mode: ' + mode;
+
+    if (mode === 'voice') {
+        startVoice();
+    }
+}
+
+function startVoice() {
+    const Recognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!Recognition) {
+        alert('Speech recognition is not supported on this device.');
+        return;
+    }
+
+    const recognition = new Recognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    recognition.onresult = event => {
+        const spoken = event.results[0][0].transcript;
+        document.getElementById('message').value = spoken;
+    };
+
+    recognition.onerror = () => {
+        alert('Voice recognition failed.');
+    };
+
+    recognition.start();
+}
+
+function speak(text) {
+    if (!window.speechSynthesis) {
+        alert('Speech output is not supported.');
+        return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    speechSynthesis.speak(utterance);
+}
+
+function openApp(packageName) {
+    alert(
+        'Opening apps is not connected in this initial build. ' +
+        'Package: ' + packageName
+    );
+}
+
+setInterval(updateStatus, 1500);
+updateStatus();
+</script>
+
+</body>
+</html>

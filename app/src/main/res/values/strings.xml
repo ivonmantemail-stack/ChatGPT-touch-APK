@@ -1,0 +1,6 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ChatGPT Touch</string>
+    <string name="accessibility_description">Allows ChatGPT Touch to read visible accessibility text and perform user-requested taps and swipes after you enable the service.</string>
+</resources>
